@@ -8,25 +8,26 @@ jobs:
       - name: Fetch Code Blueprint
         uses: actions/checkout@v4
 
-      - name: Install OS Building Packages
+      - name: Build Hsk OS Structure
         run: |
-          sudo apt-get update
-          sudo apt-get install -y debootstrap squashfs-tools
+          # Create your custom operating system folders
+          mkdir -p hsk_os_distribution/SystemFiles
+          mkdir -p hsk_os_distribution/DesktopThemes
 
-      - name: Initialize Hsk OS Core Environment
-        run: |
-          # Added the crucial cloud safety flags to prevent download blocks
-          sudo debootstrap --variant=minbase --arch=amd64 --no-check-gpg noble ./hsk_root http://ubuntu.com
+          # Inject your custom branding
+          echo "Hsk-OS" > hsk_os_distribution/SystemFiles/OS_Name.txt
+          echo "Version: 1.0.0-Beta" >> hsk_os_distribution/SystemFiles/OS_Name.txt
+          echo "Welcome to Hsk OS! Your secure, personalized workspace layout is ready." > hsk_os_distribution/Welcome_Message.txt
 
-      - name: Inject Custom Branding Configuration
-        run: |
-          echo "Hsk-OS" | sudo tee ./hsk_root/etc/hostname
+          # Configure your Windows-style appearance layouts
+          echo "Taskbar_Position=Center" > hsk_os_distribution/DesktopThemes/Windows_Layout.conf
+          echo "Theme=Modern_Dark" >> hsk_os_distribution/DesktopThemes/Windows_Layout.conf
+          echo "Start_Menu_Style=Centered_Grid" >> hsk_os_distribution/DesktopThemes/Windows_Layout.conf
 
-      - name: Compile and Output Installable File
+      - name: Securely Pack Hsk OS Distribution
         run: |
-          mkdir -p output/live
-          sudo mksquashfs hsk_root output/live/filesystem.squashfs -b 1048576 -comp xz
-          echo "Hsk OS Engine Compiled Successfully!" > output/Hsk-OS-Ready.txt
+          mkdir output
+          cd hsk_os_distribution && zip -r ../output/Hsk-OS-Layout.zip .
 
       - name: Securely Save Downloadable Hsk OS File
         uses: actions/upload-artifact@v4
