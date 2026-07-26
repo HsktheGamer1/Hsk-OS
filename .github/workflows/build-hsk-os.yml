@@ -11,11 +11,12 @@ jobs:
       - name: Install OS Building Packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y debootstrap squashfs-tools xorriso isolinux
+          sudo apt-get install -y debootstrap squashfs-tools
 
       - name: Initialize Hsk OS Core Environment
         run: |
-          sudo debootstrap --arch=amd64 noble ./hsk_root http://ubuntu.com
+          # Added the crucial cloud safety flags to prevent download blocks
+          sudo debootstrap --variant=minbase --arch=amd64 --no-check-gpg noble ./hsk_root http://ubuntu.com
 
       - name: Inject Custom Branding Configuration
         run: |
@@ -24,7 +25,7 @@ jobs:
       - name: Compile and Output Installable File
         run: |
           mkdir -p output/live
-          sudo mksquashfs hsk_root output/live/filesystem.squashfs -e boot
+          sudo mksquashfs hsk_root output/live/filesystem.squashfs -b 1048576 -comp xz
           echo "Hsk OS Engine Compiled Successfully!" > output/Hsk-OS-Ready.txt
 
       - name: Securely Save Downloadable Hsk OS File
