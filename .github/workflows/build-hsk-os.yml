@@ -10,24 +10,23 @@ jobs:
 
       - name: Build Hsk OS Structure
         run: |
-          # Create your custom operating system folders
           mkdir -p hsk_os_distribution/SystemFiles
           mkdir -p hsk_os_distribution/DesktopThemes
 
-          # Inject your custom branding
+          # Copy your interactive app script into the distribution folder
+          cp hsk_os_app.py hsk_os_distribution/Run_Hsk_OS.py
+
           echo "Hsk-OS" > hsk_os_distribution/SystemFiles/OS_Name.txt
           echo "Version: 1.0.0-Beta" >> hsk_os_distribution/SystemFiles/OS_Name.txt
-          echo "Welcome to Hsk OS! Your secure, personalized workspace layout is ready." > hsk_os_distribution/Welcome_Message.txt
+          echo "Welcome to Hsk OS! Open the Run_Hsk_OS file to launch your desktop interface." > hsk_os_distribution/Welcome_Message.txt
 
-          # Configure your Windows-style appearance layouts
           echo "Taskbar_Position=Center" > hsk_os_distribution/DesktopThemes/Windows_Layout.conf
           echo "Theme=Modern_Dark" >> hsk_os_distribution/DesktopThemes/Windows_Layout.conf
-          echo "Start_Menu_Style=Centered_Grid" >> hsk_os_distribution/DesktopThemes/Windows_Layout.conf
 
       - name: Securely Pack Hsk OS Distribution
         run: |
           mkdir output
-          cd hsk_os_distribution && zip -r ../output/Hsk-OS-Layout.zip .
+          cd hsk_os_distribution && zip -r ../output/Hsk-OS-App-Layout.zip .
 
       - name: Securely Save Downloadable Hsk OS File
         uses: actions/upload-artifact@v4
