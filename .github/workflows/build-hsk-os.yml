@@ -1,0 +1,34 @@
+name: Build Hsk OS Image
+on: [workflow_dispatch]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Code Blueprint
+        uses: actions/checkout@v4
+
+      - name: Install OS Building Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y debootstrap squashfs-tools xorriso isolinux
+
+      - name: Initialize Hsk OS Core Environment
+        run: |
+          sudo debootstrap --arch=amd64 noble ./hsk_root http://ubuntu.com
+
+      - name: Inject Custom Branding Configuration
+        run: |
+          echo "Hsk-OS" | sudo tee ./hsk_root/etc/hostname
+
+      - name: Compile and Output Installable File
+        run: |
+          mkdir -p output/live
+          sudo mksquashfs hsk_root output/live/filesystem.squashfs -e boot
+          echo "Hsk OS Engine Compiled Successfully!" > output/Hsk-OS-Ready.txt
+
+      - name: Securely Save Downloadable Hsk OS File
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hsk-OS-Build
+          path: output/
